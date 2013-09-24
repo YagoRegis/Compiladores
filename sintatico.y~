@@ -74,7 +74,7 @@ Write:
    PRINT LEFT_PARENTHESIS QUOTATION STRING QUOTATION RIGHT_PARENTHESIS { printf( "printf(\"%s\"); \n", &buffer); }
    ;
 Read:
-   STRING ARROW SCANF {printf("scanf(\"%%s\", &%s);", &buffer);}
+   STRING ARROW SCANF {printf("scanf(\"%%s\", %s);", &buffer);}
    ;     
 /*
 List:
