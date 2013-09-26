@@ -42,10 +42,10 @@ Line:
    | Comparacao
    ;
 Integer:
-   INTEGER {printf("Int");}
+   INTEGER
    ;
 Float:
-   FLOAT { printf("float");}
+   FLOAT
    ;
 Atribuicao:
    STRING EQUALS Expression { printf("%s = %f", &buffer, $3); }
@@ -53,7 +53,9 @@ Atribuicao:
    ;
 
 Boolean:
-   AND | OR | NOT
+   AND { printf(" && "); }
+   | OR { printf(" || "); }
+   | NOT { printf(" ! "); }
    ;
 Expression:
    Integer { $$=$1; }
@@ -70,17 +72,17 @@ Expression:
    ;
 
 If:
-   IF LEFT_PARENTHESIS Comparacao RIGHT_PARENTHESIS  { printf("if("); }
-   | IF2 Comparacao { printf("if");}
+   IF LEFT_PARENTHESIS {printf ("if(");} Comparacao RIGHT_PARENTHESIS  { printf(")"); }
+   | IF2 { printf("if(");} Comparacao { printf(")"); }
    ;
 
 Comparacao:
-   Comparacao Boolean Comparacao { printf ("%f %f %f", $1, $2, $3);}
-   | Expression SMALLER_THAN Expression
-   | Expression BIGGER_THAN Expression 
-   | Expression COMPARATION Expression 
-   | Expression SMALLER_EQUALS Expression
-   | Expression BIGGER_EQUALS Expression
+   Comparacao Boolean Comparacao
+   | Expression SMALLER_THAN Expression {printf ("%f < %f", $1, $3);}
+   | Expression BIGGER_THAN Expression {printf ("%f > %f", $1, $3);}
+   | Expression COMPARATION Expression {printf ("%f == %f", $1, $3);}
+   | Expression SMALLER_EQUALS Expression {printf ("%f <= %f", $1, $3);}
+   | Expression BIGGER_EQUALS Expression {printf ("%f >= %f", $1, $3);}
    ;
 
 Write:
