@@ -14,7 +14,7 @@ real {integer}("."{integer})
 string [a-zA-Z ][a-zA-Z{integer} ]*
 
 %%
-{white} {/*We ignore white characters*/}
+{white} { }
 {integer} {
    yylval=atof(yytext);
    return (INTEGER);

@@ -3,8 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 extern char buffer;
+
+//extern FILE *stdin;
+//stdin = fopen ("texto.txt", "r");
 
 %}
 
@@ -29,15 +35,21 @@ Input:
 Line:
    END_LINE
    | Expression END_LINE { }
+   | Atribuicao
    | If 
-   | Write
+   | Write END_LINE { }
    | Read END_LINE { }
+   | Comparacao
    ;
 Integer:
-   INTEGER {printf("Inteiro\n");}
+   INTEGER {printf("Int");}
    ;
 Float:
-   FLOAT { printf("float\n");}
+   FLOAT { printf("float");}
+   ;
+Atribuicao:
+   STRING EQUALS Expression { printf("%s = %f", &buffer, $3); }
+   |STRING EQUALS STRING { printf("Atribuicao2"); }
    ;
 
 Boolean:
@@ -58,18 +70,19 @@ Expression:
    ;
 
 If:
-   IF LEFT_PARENTHESIS Comparacao RIGHT_PARENTHESIS  { }
+   IF LEFT_PARENTHESIS Comparacao RIGHT_PARENTHESIS  { printf("if("); }
    | IF2 Comparacao { printf("if");}
    ;
 
 Comparacao:
-   Comparacao Boolean Comparacao
-   | Expression SMALLER_THAN Expression 
+   Comparacao Boolean Comparacao { printf ("%f %f %f", $1, $2, $3);}
+   | Expression SMALLER_THAN Expression
    | Expression BIGGER_THAN Expression 
    | Expression COMPARATION Expression 
    | Expression SMALLER_EQUALS Expression
    | Expression BIGGER_EQUALS Expression
    ;
+
 Write:
    PRINT LEFT_PARENTHESIS QUOTATION STRING QUOTATION RIGHT_PARENTHESIS { printf( "printf(\"%s\"); \n", &buffer); }
    ;
