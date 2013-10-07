@@ -6,15 +6,27 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 
 extern char buffer;
+extern char buffer2;
+
+/*typedef struct _table_variable{
+
+  char[10] type;
+  int value;
+  float value;
+
+} table_variable;
+*/
 
 //extern FILE *stdin;
 //stdin = fopen ("texto.txt", "r");
 
 %}
 
-%token INTEGER FLOAT STRING
+
+%token INTEGER FLOAT STRING VARIABLE
 %token NEG
 %token PLUS MINUS TIMES DIVIDE POWER
 %token LEFT_PARENTHESIS RIGHT_PARENTHESIS
@@ -37,9 +49,10 @@ Line:
    | Expression END_LINE { }
    | Atribuicao
    | If 
-   | Write END_LINE { }
-   | Read END_LINE { }
+   | Write
+   | Read 
    | Comparacao
+   | Boolean
    ;
 Integer:
    INTEGER
@@ -48,8 +61,8 @@ Float:
    FLOAT
    ;
 Atribuicao:
-   STRING EQUALS Expression { printf("%s = %f", &buffer, $3); }
-   |STRING EQUALS STRING { printf("Atribuicao2"); }
+   VARIABLE EQUALS { printf("%s = ", &buffer2);} Expression {printf (";");}
+   |VARIABLE EQUALS STRING { int x; x = (int)strlen(&buffer)-2; printf("char %s[%d] = %s;",&buffer2, x, &buffer); }
    ;
 
 Boolean:
@@ -58,17 +71,17 @@ Boolean:
    | NOT { printf(" ! "); }
    ;
 Expression:
-   Integer { $$=$1; }
-   |Float { $$=$1; }
+   Integer { printf("%d", (int)$$); }
+   |Float { printf("%f", $$); }
    | Expression POWER Expression { $$=pow($1,$3); }
-   | LEFT_PARENTHESIS Expression RIGHT_PARENTHESIS { $$=$2; }
-   | LEFT_COLCHETES Expression RIGHT_COLCHETES { $$=$2; }
-   | LEFT_KEYS Expression RIGHT_KEYS { $$=$2; }
-   | Expression PLUS Expression { $$ = $1 + $3; printf("%f\n",$$);}
-   | Expression MINUS Expression { $$=$1-$3; }
-   | Expression TIMES Expression { $$=$1*$3; }
-   | Expression DIVIDE Expression { $$=$1/$3; }
-   | MINUS Expression %prec NEG { $$ = -$2; }
+   | LEFT_PARENTHESIS { printf("(");} Expression RIGHT_PARENTHESIS { printf(")");}
+   | LEFT_COLCHETES { printf("[");} Expression RIGHT_COLCHETES { printf("]");}
+   | LEFT_KEYS { printf("{");} Expression RIGHT_KEYS { printf("}");}
+   | Expression PLUS { printf(" + ");} Expression 
+   | Expression MINUS { printf(" - ");} Expression
+   | Expression TIMES { printf(" * ");} Expression
+   | Expression DIVIDE { printf(" / ");} Expression
+   | MINUS Expression %prec NEG
    ;
 
 If:
@@ -78,18 +91,18 @@ If:
 
 Comparacao:
    Comparacao Boolean Comparacao
-   | Expression SMALLER_THAN Expression {printf ("%f < %f", $1, $3);}
-   | Expression BIGGER_THAN Expression {printf ("%f > %f", $1, $3);}
-   | Expression COMPARATION Expression {printf ("%f == %f", $1, $3);}
-   | Expression SMALLER_EQUALS Expression {printf ("%f <= %f", $1, $3);}
-   | Expression BIGGER_EQUALS Expression {printf ("%f >= %f", $1, $3);}
+   | Expression SMALLER_THAN {printf (" < ");} Expression 
+   | Expression BIGGER_THAN {printf (" > ");} Expression 
+   | Expression COMPARATION {printf (" == ");} Expression 
+   | Expression SMALLER_EQUALS {printf (" <= ");} Expression 
+   | Expression BIGGER_EQUALS {printf (" >= ");} Expression 
    ;
 
 Write:
-   PRINT LEFT_PARENTHESIS QUOTATION STRING QUOTATION RIGHT_PARENTHESIS { printf( "printf(\"%s\"); \n", &buffer); }
+   PRINT LEFT_PARENTHESIS STRING RIGHT_PARENTHESIS { printf( "printf(%s); \n", &buffer); }
    ;
 Read:
-   STRING ARROW SCANF {printf("scanf(\"%%s\", &%s);", &buffer);}
+   VARIABLE ARROW SCANF {printf("scanf(\"%%s\", &%s);", &buffer2);}
    ;     
 /*
 List:

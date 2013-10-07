@@ -5,13 +5,16 @@
 #include <stdlib.h>
 
 char buffer[500];
+char buffer2[500];
 %}
 
 white [ \t]+
 digit [0-9]
 integer {digit}+
 real {integer}("."{integer})
-string [a-zA-Z ][a-zA-Z{integer} ]*
+string \"[a-zA-Z ][a-zA-Z{integer} ]*\"
+variable [a-zA-Z][a-zA-Z{integer}]*
+
 
 %%
 {white} { }
@@ -57,10 +60,15 @@ string [a-zA-Z ][a-zA-Z{integer} ]*
 "\"" return (QUOTATION);
 "," return (VIRGULA);
 
+{variable} {
+   strcpy(buffer2,yytext); 
+   return (VARIABLE);
+   };
 {string} {
    strcpy(buffer,yytext); 
    return (STRING);
    };
+
 
 
 %%
